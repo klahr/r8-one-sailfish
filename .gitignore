@@ -1,0 +1,9 @@
+# Native build output (build.sh) and qmake's, in-tree as the SDK builds
+build/
+*.o
+moc_*
+Makefile
+.qmake.stash
+harbour-r8-one
+RPMS/
+documentation.list

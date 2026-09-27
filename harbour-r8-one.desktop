@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.1
+X-Nemo-Application-Type=silica-qt5
+Icon=harbour-r8-one
+Exec=harbour-r8-one
+Name=r8 One
+Comment=An RPN calculator whose input language is a real stack language: Quadrate
+
+# Documents holds the inbox, where a PC drops programs over USB
+[X-Sailjail]
+Permissions=Documents
+OrganizationName=rs.r8
+ApplicationName=harbour-r8-one

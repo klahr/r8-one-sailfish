@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The case in the simulator's colours: panel above, keys below. The Android
+     app's launcher icon, drawn the same. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <path fill="#2B2D2B" d="M10,2h28a4,4 0,0 1,4 4v36a4,4 0,0 1,-4 4h-28a4,4 0,0 1,-4 -4v-36a4,4 0,0 1,4 -4z"/>
+  <path fill="#C9CEC6" d="M11,7h26v14h-26z"/>
+  <path fill="#1A1C1A" d="M14,15h8v3h-8z"/>
+  <path fill="#C9CEC6" d="M11,25h6v4h-6zM21,25h6v4h-6zM31,25h6v4h-6zM11,32h6v4h-6zM21,32h6v4h-6zM31,32h6v4h-6zM11,39h6v3h-6zM21,39h6v3h-6zM31,39h6v3h-6z"/>
+</svg>
