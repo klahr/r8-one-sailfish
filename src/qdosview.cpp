@@ -2,20 +2,11 @@
 
 #include "machine.h"
 
-#include <QColor>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPainter>
 
 #include <cmath>
-
-/*
- * The case's own gradient runs from these at the top of the window to these at
- * the bottom (FRAME_TOP and FRAME_BOTTOM in keypad_ui.c). A phone is taller
- * than the case, so the band left over above and below is painted to match.
- */
-static const QColor CASE_TOP(0x33, 0x36, 0x33);
-static const QColor CASE_BOTTOM(0x1C, 0x1E, 0x1C);
 
 QdosView::QdosView(QQuickItem* parent) : QQuickPaintedItem(parent) {
 	setOpaquePainting(false);
@@ -55,9 +46,6 @@ void QdosView::paint(QPainter* painter) {
 	const qreal scale = std::min(width() / src.width(), height() / src.height());
 	const QSizeF size(src.width() * scale, src.height() * scale);
 	m_target = QRectF(QPointF((width() - size.width()) / 2, (height() - size.height()) / 2), size);
-
-	painter->fillRect(QRectF(0, 0, width(), m_target.top()), CASE_TOP);
-	painter->fillRect(QRectF(0, m_target.bottom(), width(), height() - m_target.bottom()), CASE_BOTTOM);
 
 	// A phone is rarely a whole multiple of the case. Nearest-neighbour at a
 	// fraction would draw some of the font's 2px stems 3px wide, and smoothing

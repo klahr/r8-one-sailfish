@@ -13,6 +13,7 @@
 #include <QImage>
 #include <QObject>
 #include <QString>
+#include <QStringList>
 
 #include <qdos/hal.h>
 
@@ -31,9 +32,9 @@ class Machine : public QObject {
 	/** The case, panel and keypad, QDOS_WINDOW_W by QDOS_WINDOW_H */
 	Q_PROPERTY(QImage frame READ frame NOTIFY frameChanged)
 
-	/** The top of the stack as the display shows it, and how deep the stack is */
-	Q_PROPERTY(QString top READ top NOTIFY topChanged)
-	Q_PROPERTY(int depth READ depth NOTIFY topChanged)
+	/** The top of the stack as the display shows it, top first, and how deep the stack is */
+	Q_PROPERTY(QStringList stack READ stack NOTIFY stackChanged)
+	Q_PROPERTY(int depth READ depth NOTIFY stackChanged)
 
 public:
 	/** The stores, as the Android activity sets them up before SDL starts */
@@ -48,7 +49,7 @@ public:
 	~Machine() override;
 
 	QImage frame() const { return m_frame; }
-	QString top() const { return m_top; }
+	QStringList stack() const { return m_stack; }
 	int depth() const { return m_depth; }
 
 	/** Starts the shell; it runs until it powers off or stop() is called */
@@ -70,14 +71,14 @@ public:
 
 signals:
 	void frameChanged();
-	void topChanged();
+	void stackChanged();
 
 	/** The shell returned by itself: the power key, or auto-off */
 	void poweredOff();
 
 	/** Emitted from the shell thread, so it crosses to the GUI queued */
 	void frameReady(const QImage& image);
-	void topReady(const QString& top, int depth);
+	void stackReady(const QStringList& stack, int depth);
 
 private:
 	enum class Kind { Press, Release, Key, Char, Save, Wake };
@@ -112,7 +113,7 @@ private:
 	static bool halStoreChanged(qdos_hal* hal);
 	static bool halTimeOfDay(qdos_hal* hal, int* seconds);
 	static int halBattery(qdos_hal* hal);
-	static void halShowTop(qdos_hal* hal, const char* text, size_t depth);
+	static void halShowStack(qdos_hal* hal, const char* const* rows, size_t count, size_t depth);
 
 	static Machine* self(qdos_hal* hal) { return static_cast<Machine*>(hal->impl); }
 
@@ -122,7 +123,7 @@ private:
 	void watchThread();
 
 	QImage m_frame;
-	QString m_top;
+	QStringList m_stack;
 	int m_depth = 0;
 
 	QByteArray m_system;
@@ -144,7 +145,7 @@ private:
 	qdos_pad_layer m_layer = QDOS_PAD_PLAIN;
 	qdos_pad_layer m_locked = QDOS_PAD_PLAIN;
 	const qdos_pad_button* m_pressed = nullptr;
-	QByteArray m_shownTop; ///< What was last sent, so a repaint of the same sends nothing
+	QStringList m_shownStack; ///< What was last sent, so a repaint of the same sends nothing
 	size_t m_shownDepth = 0;
 	uint8_t m_rgb[QDOS_WINDOW_W * QDOS_WINDOW_H * 3];
 

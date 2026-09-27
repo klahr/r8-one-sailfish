@@ -66,10 +66,10 @@ Machine::Machine(const Stores& stores, QObject* parent)
 		m_frame = image;
 		emit frameChanged();
 	});
-	connect(this, &Machine::topReady, this, [this](const QString& top, int depth) {
-		m_top = top;
+	connect(this, &Machine::stackReady, this, [this](const QStringList& stack, int depth) {
+		m_stack = stack;
 		m_depth = depth;
-		emit topChanged();
+		emit stackChanged();
 	});
 
 	m_hal.init = halInit;
@@ -88,7 +88,7 @@ Machine::Machine(const Stores& stores, QObject* parent)
 	m_hal.store_changed = halStoreChanged;
 	m_hal.time_of_day = halTimeOfDay;
 	m_hal.battery = halBattery;
-	m_hal.show_top = halShowTop;
+	m_hal.show_stack = halShowStack;
 	// No usb_export: the inbox is in the phone's Documents, which a PC reaches
 	// over MTP at any time, so there is nothing to hand over and the shell
 	// does not offer it
@@ -433,14 +433,18 @@ int Machine::halBattery(qdos_hal* hal) {
 }
 
 /** @brief For the cover, which is too small for the panel to be read on */
-void Machine::halShowTop(qdos_hal* hal, const char* text, size_t depth) {
+void Machine::halShowStack(qdos_hal* hal, const char* const* rows, size_t count, size_t depth) {
 	Machine* m = self(hal);
-	if (m->m_shownTop == text && m->m_shownDepth == depth) {
+	QStringList stack;
+	for (size_t i = 0; i < count; i++) {
+		stack.append(QString::fromUtf8(rows[i]));
+	}
+	if (m->m_shownStack == stack && m->m_shownDepth == depth) {
 		return;
 	}
-	m->m_shownTop = text;
+	m->m_shownStack = stack;
 	m->m_shownDepth = depth;
-	emit m->topReady(QString::fromUtf8(text), (int)depth);
+	emit m->stackReady(stack, (int)depth);
 }
 
 /* --- Store ---------------------------------------------------------------- */
