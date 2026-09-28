@@ -77,6 +77,7 @@ Machine::Machine(const Stores& stores, QObject* parent)
 	m_hal.present = halPresent;
 	m_hal.poll_key = halPollKey;
 	m_hal.modifier = halModifier;
+	m_hal.modifier_reset = halModifierReset;
 	m_hal.running = halRunning;
 	m_hal.ticks_ms = halTicks;
 	m_hal.wait = halWait;
@@ -367,15 +368,19 @@ bool Machine::halPollKey(qdos_hal* hal, qdos_key_event* out) {
 				return true;
 			case '+':
 				out->key = QDOS_KEY_ADD;
+				out->ch = ev.ch; // typed, so a line takes the character and not the key's word
 				return true;
 			case '-':
 				out->key = QDOS_KEY_SUB;
+				out->ch = ev.ch;
 				return true;
 			case '*':
 				out->key = QDOS_KEY_MUL;
+				out->ch = ev.ch;
 				return true;
 			case '/':
 				out->key = QDOS_KEY_DIV;
+				out->ch = ev.ch;
 				return true;
 			default:
 				out->key = QDOS_KEY_CHAR;
@@ -404,6 +409,15 @@ qdos_keypad_mod Machine::halModifier(qdos_hal* hal) {
 		return QDOS_MOD_SYMBOL;
 	default:
 		return QDOS_MOD_NONE;
+	}
+}
+
+void Machine::halModifierReset(qdos_hal* hal) {
+	Machine* m = self(hal);
+	if (m->m_layer != QDOS_PAD_PLAIN || m->m_locked != QDOS_PAD_PLAIN) {
+		m->m_layer = QDOS_PAD_PLAIN;
+		m->m_locked = QDOS_PAD_PLAIN;
+		m->pushFrame();
 	}
 }
 

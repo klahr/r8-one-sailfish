@@ -100,6 +100,7 @@ private:
 	static void halPresent(qdos_hal* hal, const uint8_t* fb);
 	static bool halPollKey(qdos_hal* hal, qdos_key_event* out);
 	static qdos_keypad_mod halModifier(qdos_hal* hal);
+	static void halModifierReset(qdos_hal* hal);
 	static bool halRunning(qdos_hal* hal);
 	static uint32_t halTicks(qdos_hal* hal);
 	static void halWait(qdos_hal* hal, int timeout_ms);
