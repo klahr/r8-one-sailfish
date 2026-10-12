@@ -244,7 +244,7 @@ void Machine::halWait(qdos_hal* hal, int timeout_ms) {
 /** @brief Redraw the keypad over the last panel image and send it to the view */
 void Machine::pushFrame() {
 	qdos_frame_draw(m_rgb, QDOS_WINDOW_W);
-	qdos_pad_draw(m_rgb, QDOS_WINDOW_W, QDOS_PAD_X, QDOS_PAD_Y, m_layer, m_pressed);
+	qdos_pad_draw(m_rgb, QDOS_WINDOW_W, QDOS_PAD_X, QDOS_PAD_Y, m_face.layer, m_pressed);
 
 	const QImage image(m_rgb, QDOS_WINDOW_W, QDOS_WINDOW_H, QDOS_WINDOW_W * 3, QImage::Format_RGB888);
 	// A copy: the buffer is redrawn under the view the next time round
@@ -312,27 +312,9 @@ bool Machine::halPollKey(qdos_hal* hal, qdos_key_event* out) {
 			m->m_pressed = b;
 			m->pushFrame();
 
-			qdos_pad_layer selects;
-			if (qdos_pad_modifier(b, &selects)) {
-				if (m->m_layer == selects) {
-					m->m_layer = QDOS_PAD_PLAIN;
-					m->m_locked = QDOS_PAD_PLAIN;
-				} else {
-					m->m_layer = selects;
-					// Letters lock, since a name is more than one press;
-					// symbols do not, and hand back to what was showing
-					if (selects == QDOS_PAD_ALPHA) {
-						m->m_locked = QDOS_PAD_ALPHA;
-					}
-				}
-				m->pushFrame();
-				break;
-			}
-
-			const qdos_pad_action* a = qdos_pad_action_for(b, m->m_layer);
-			const qdos_pad_layer was = m->m_layer;
-			m->m_layer = m->m_locked;
-			if (was != m->m_layer) {
+			const qdos_pad_layer was = m->m_face.layer;
+			const qdos_pad_action* a = qdos_pad_press(&m->m_face, b);
+			if (was != m->m_face.layer) {
 				m->pushFrame();
 			}
 			if (a == nullptr) {
@@ -356,37 +338,8 @@ bool Machine::halPollKey(qdos_hal* hal, qdos_key_event* out) {
 			return true;
 
 		case Kind::Char:
-			if (ev.ch >= '0' && ev.ch <= '9') {
-				out->key = (qdos_key)(QDOS_KEY_0 + (ev.ch - '0'));
-				out->ch = 0;
-				return true;
-			}
-			out->ch = 0;
-			switch (ev.ch) {
-			case '.':
-				out->key = QDOS_KEY_DOT;
-				return true;
-			case '+':
-				out->key = QDOS_KEY_ADD;
-				out->ch = ev.ch; // typed, so a line takes the character and not the key's word
-				return true;
-			case '-':
-				out->key = QDOS_KEY_SUB;
-				out->ch = ev.ch;
-				return true;
-			case '*':
-				out->key = QDOS_KEY_MUL;
-				out->ch = ev.ch;
-				return true;
-			case '/':
-				out->key = QDOS_KEY_DIV;
-				out->ch = ev.ch;
-				return true;
-			default:
-				out->key = QDOS_KEY_CHAR;
-				out->ch = ev.ch;
-				return true;
-			}
+			qdos_pad_typed(ev.ch, out);
+			return true;
 
 		// Sailfish may kill an app in the background to free memory
 		case Kind::Save:
@@ -402,7 +355,7 @@ bool Machine::halPollKey(qdos_hal* hal, qdos_key_event* out) {
 }
 
 qdos_keypad_mod Machine::halModifier(qdos_hal* hal) {
-	switch (self(hal)->m_layer) {
+	switch (self(hal)->m_face.layer) {
 	case QDOS_PAD_ALPHA:
 		return QDOS_MOD_ALPHA;
 	case QDOS_PAD_SYMBOL:
@@ -414,9 +367,9 @@ qdos_keypad_mod Machine::halModifier(qdos_hal* hal) {
 
 void Machine::halModifierReset(qdos_hal* hal) {
 	Machine* m = self(hal);
-	if (m->m_layer != QDOS_PAD_PLAIN || m->m_locked != QDOS_PAD_PLAIN) {
-		m->m_layer = QDOS_PAD_PLAIN;
-		m->m_locked = QDOS_PAD_PLAIN;
+	if (m->m_face.layer != QDOS_PAD_PLAIN || m->m_face.locked != QDOS_PAD_PLAIN) {
+		m->m_face.layer = QDOS_PAD_PLAIN;
+		m->m_face.locked = QDOS_PAD_PLAIN;
 		m->pushFrame();
 	}
 }

@@ -143,8 +143,7 @@ private:
 
 	// The shell thread's own from here on
 	const char* m_pending = nullptr; ///< Rest of a text button still to be delivered
-	qdos_pad_layer m_layer = QDOS_PAD_PLAIN;
-	qdos_pad_layer m_locked = QDOS_PAD_PLAIN;
+	qdos_pad_face m_face = {QDOS_PAD_PLAIN, QDOS_PAD_PLAIN}; ///< Which keypad face is showing
 	const qdos_pad_button* m_pressed = nullptr;
 	QStringList m_shownStack; ///< What was last sent, so a repaint of the same sends nothing
 	size_t m_shownDepth = 0;
