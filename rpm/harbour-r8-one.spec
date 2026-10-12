@@ -1,6 +1,6 @@
 Name:       harbour-r8-one
 Summary:    RPN calculator whose input language is Quadrate
-Version:    0.1.0
+Version:    0.2.0
 Release:    1
 License:    GPLv3+
 URL:        https://github.com/klahr/r8-one-sailfish
@@ -43,7 +43,3 @@ desktop-file-install --delete-original \
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-
-%changelog
-* Sat Sep 26 2026 Joachim Klahr <joachim.klahr@resolutiongames.com> - 0.1.0-1
-- First release, on QDOS 0.2.0

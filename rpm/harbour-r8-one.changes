@@ -1,0 +1,16 @@
+* Mon Oct 12 2026 Joachim Klahr <klahr@r8.rs> 0.2.0-1
+- QDOS 0.4.0
+- Typing a letter on the stack opens a line with it, as an HP 48 does,
+  and a line that fails stays to be put right under the reason
+- ESC never throws away the stack: CLST (shift-DEL) empties it and UNDO
+  brings it back, and DEL with nothing typed drops x
+- EE beside the sign key for exponents, % as an HP's percent
+- Shift on a function is its inverse, and the HP's y^x, x!, R-down and
+  last x have keys of their own
+- Y= takes a formula as a TI does, x^2 + 3x - sin(x)/2, as well as RPN
+- spring, a damped spring drawn in real time, among the system programs
+- The shift key and its legends in Quadrate's purple
+- New icon in the Sailfish shape, with the purple shift key
+
+* Sat Sep 26 2026 Joachim Klahr <klahr@r8.rs> 0.1.0-1
+- First release, on QDOS 0.2.0

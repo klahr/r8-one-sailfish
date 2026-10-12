@@ -21,6 +21,9 @@ and keeps, what the Android app does. SDL is not used at all.
 The inbox is always reachable from a PC, so there is no card to hand over and
 the shell does not offer to share it.
 
+Needs Sailfish OS 5.1 or newer, on aarch64 or armv7hl. The app is sandboxed
+and asks for the Documents permission on first start, for the inbox.
+
 Everything it is built from is a submodule under `external/`, at the same
 commits as the Android app:
 
@@ -36,10 +39,13 @@ With the [Sailfish SDK](https://docs.sailfishos.org/Tools/Sailfish_SDK/):
 
 ```bash
 git submodule update --init
-sfdk config target=SailfishOS-5.0.0.43-aarch64
-sfdk build                              # RPM lands in RPMS/
-sfdk deploy --sdk                       # and install it on the device
+sfdk -c target=SailfishOS-5.1.0.11-aarch64 build
+sfdk -c target=SailfishOS-5.1.0.11-armv7hl build
 ```
+
+The RPM lands in `RPMS/`. Clean the build files between targets: `build/`
+holds the native libraries for the last one. The project has to be inside the
+SDK workspace.
 
 The RPM's `%build` runs `build.sh`, which builds QDOS's core and the Quadrate
 libraries with meson, then qmake links them into the app. The build must run
